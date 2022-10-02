@@ -1,0 +1,54 @@
+.Details{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail{
+  width: 25%;
+  text-align: center;
+  border: 2px solid #B8043B;
+  margin: 7px;
+  padding: 7px;
+}
+
+  /* Buttons */
+  .newbtn{
+    border: 2px solid #B8043B;
+    background-color: black;
+    border-radius: 8px;
+    margin: 5px;
+    color: white;
+  }
+  
+  .newbtn:hover{
+    background-color: white;
+    color: black;
+  }
+  
+  .dropDown{
+    position: absolute;
+    left: 2%;
+    top: 10%;
+    margin: 8px;  
+  }
+  
+  .bigBtn{
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    background: black;
+    border: 2px solid #B8043B;
+    padding: 15px 40px;
+    border-radius: 4px;
+    font-weight: normal;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .bigBtn:hover {
+    color: rgba(255, 255, 255, 1B8043B);
+    box-shadow: 6px 7px 18px #B8043B;
+    background-color: #26020d;
+  }
+  
