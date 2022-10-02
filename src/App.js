@@ -5,7 +5,6 @@ import { Notification } from "./components/ui/Notifications";
 import Wallet from "./components/Wallet";
 import Cover from "./components/Cover";
 import Input from "./components/Input";
-import Details from "./components/Details";
 import { useBalance} from "./hooks";
 import { useState, useEffect} from "react";
 
@@ -16,7 +15,8 @@ import "./App.css";
 import Newdetails from "./components/Newdetails";
 
 const App = function AppWrapper() {
-  let loanContractAddress = "0x144E247304DEDd511ac0A8Fe88931b2642d8F40C"; 
+  // let loanContractAddress = "0x64Ade859d15699A15707783Dc0A90D60C29Aa8c9"; 
+  let loanContractAddress = "0xd237f750e1Be2c9e52FE9AB36559e9763a772141"; 
   const [showModal, setShowModal] = useState();
   const [loans, setLoans] = useState();
   const [loanContract, setLoanContract] = useState();
@@ -28,7 +28,6 @@ const App = function AppWrapper() {
     let _loanContract = new kit.web3.eth.Contract(abi.abi, loanContractAddress);
     setLoanContract(_loanContract);
     let loanId = await getloanid(_loanContract);
-    console.log(loanId);
     let loansUh = await getloans(_loanContract, loanId);
     setLoans(loansUh);
     console.log(loansUh);
@@ -57,7 +56,6 @@ const App = function AppWrapper() {
           {/* display cover */}
           <main>
             <div>
-                  <h1>NFT Loan</h1>
                   <button className="askForLoan bigBtn" onClick={() => setShowModal(true)} >Ask for Loan</button>
                   <Input onClose={() => setShowModal(false)} loanContractAddress = {loanContractAddress} show={showModal} loanContract={loanContract} getLoans = {getLoans} />
                   <Newdetails  loans= {loans} loanContract={loanContract}  getLoans = {getLoans} />

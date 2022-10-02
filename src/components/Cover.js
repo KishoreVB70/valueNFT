@@ -12,7 +12,7 @@ const Cover = ({ connect }) => {
   return (
     <>
       <img src={logo} className="App-logo" alt="logo" />
-      <p>Celo React Boilerplate</p>
+      <p>NFT Loan Dapp</p>
       <Button variant="primary" onClick={connectWallet}>
         Connect Wallet
       </Button>
