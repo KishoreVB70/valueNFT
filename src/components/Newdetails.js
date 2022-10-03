@@ -102,7 +102,9 @@ const Newdetails = (props) => {
                         <p>Amount: {amount} celo</p>
                         <p>interest: {detail.interest}%</p>
                         <p>nftAddress: {detail.nftAddress.substring(0,5)}</p>
+                        <p>nftId: {detail.nftId}</p>n
                         <p>Amount after Interest: {amountToBeRepayed} </p>
+                        <a href={` https://alfajores-blockscout.celo-testnet.org/token/${detail.nftAddress}/instance/${detail.nftId}/`} target="_blank">View on BlockExplorer</a>
                         {detail.status == 0 && (
                             <div>
                                 <p>loanDuration: {detail.loanDuration} mins </p>
