@@ -8,10 +8,13 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 /*
 Todo
     1) Look if there could be any other improvements
+    2) Adding comments
 */
 
 contract NftLoan{
 
+    /// @param amountToBeRepayed is the amount after interest
+    /// @param loanDuration in minutes for testing purpose
     struct Loan{
         //Amount in celo
         uint256 loanAmount;
@@ -76,7 +79,8 @@ contract NftLoan{
 
 //----------------------------------------------------------------------------------------------------------------------
     
-    //Function using which the users can make a loan request
+    /// @dev users makes a loan request by transferring his nft to the contract
+    /// @param _loanDuration in minutes for testing purpose
     function askForLoan(uint256 _nftId, address _nft, uint256 _amount,  uint256 _loanDuration, uint256 _interest) public nonReentrant{
         IERC721(_nft).transferFrom(msg.sender, address(this), _nftId);
         uint256 amountToBeRepayed = _amount + mulDiv(_amount, _interest, 100);
@@ -86,7 +90,7 @@ contract NftLoan{
         emit newLoan(msg.sender, loanId);
     }
 
-    //Other users can view the request details and use this function to lend money
+    /// @dev Other users can view the request details and lend money
     function lendMoney(uint _loanId) public payable isOpen(_loanId){
         Loan storage loan = loanList[_loanId];
         require(msg.sender != loan.borrower, "You cannot loan yourself");
@@ -99,15 +103,15 @@ contract NftLoan{
         emit loaned(loan.borrower, loan.lender, _loanId, loan.loanAmount);
     }
 
-    //If no one lends money in the particular window, users can close the request and get their NFT back
-    function closeBorrowRequest(uint _loanId) public onlyBorrower(_loanId) isOpen(_loanId){
+    /// @dev If no user lends money, the borrower can close the request and get their NFT back
+    function closeBorrowRequest(uint _loanId) public onlyBorrower(_loanId) isOpen(_loanId) noReentrant{
         Loan storage loan = loanList[_loanId];
         IERC721(loan.nftAddress).transferFrom(address(this), msg.sender, loan.nftId);
         loan.status = Status.Closed;
         emit requestClosed(msg.sender, _loanId);
     }
     
-    //Function using which the borrower can return the money and get his NFT back
+    /// @dev  borrower can return the money and get his NFT back
     function repayLoan(uint _loanId) public payable onlyBorrower(_loanId) isLoaned(_loanId) nonReentrant{
         Loan storage loan = loanList[_loanId];
         require(loan.loanDurationEndTimestamp > block.timestamp, "Loan duration Ended");
@@ -119,7 +123,7 @@ contract NftLoan{
         emit loanRepayed(msg.sender, loan.lender, _loanId, loan.loanAmount);
     }
 
-    //If the borrower fails to pay back the money, after the loan duration ends, the nft is transfered the lender
+    /// @dev If the borrower fails to pay back the money, after the loan duration ends, the nft is transfered the lender
     function ceaseNft(uint _loanId) public isLoaned(_loanId){
         Loan storage loan = loanList[_loanId];
         require(msg.sender == loan.lender, "Only the lender can cease the NFT");
@@ -129,14 +133,16 @@ contract NftLoan{
         emit nftCeased(loan.borrower, loan.lender, _loanId);
     }
     
+    /// @dev helper function to calculate the percentage interest
     function mulDiv (uint x, uint y, uint z) internal pure returns (uint){
         uint a = x / z; uint b = x % z; // x = a * z + b
         uint c = y / z; uint d = y % z; // y = c * z + d
         return a * b * z + a * d + b * c + b * d / z;
     }
 
-    //View funciton that returns the required details of the loan
+    /// @dev View funciton that returns the required details of the loan
     function getDetails(uint _loanId) public view returns(uint loanAmount, uint interest, uint amountToBeRepayed, uint nftId, uint loanDuration, uint loanDurationEndTimestamp, uint loanIndex, address nftAddress, address payable borrowerAddress, address payable lenderAddress, Status status){
+        require(_loanId <= loanId.current(), "loan does not exist");
         Loan storage loan = loanList[_loanId];
         return(
             loan.loanAmount,
@@ -153,7 +159,7 @@ contract NftLoan{
         );
     }
 
-    //View the Id
+    /// @dev View the Id
     function getId() public view returns(uint id){
         return loanId.current();
     }
