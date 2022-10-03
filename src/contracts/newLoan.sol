@@ -2,6 +2,8 @@
 pragma solidity ^0.8.2;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /*
 Todo
@@ -33,22 +35,31 @@ contract NftLoan{
 
     mapping(uint => Loan) loanList;
 
-    uint256 public loanId;
+    using Counters for Counters.Counter;
+
+    Counters.Counter private loanId;
+
 
     //Modifiers
 
     modifier onlyBorrower(uint _loanId){
-        require(msg.sender == loanList[_loanId].borrower, "Only the borrower can access this function");
+        require(
+            msg.sender == loanList[_loanId].borrower,
+            "Only the borrower can access this function");
         _;
     }
 
     modifier isOpen(uint _loanId){
-        require(loanList[_loanId].status == Status.Open, "Loan is not Open");
+        require(
+            loanList[_loanId].status == Status.Open, 
+            "Loan is not Open");
         _;
     }
 
     modifier isLoaned(uint _loanId){
-        require(loanList[_loanId].status == Status.Loaned, "The loan is not in loaned state");
+        require(
+            loanList[_loanId].status == Status.Loaned, 
+            "The loan is not in loaned state");
         _;
     }
 
@@ -66,12 +77,13 @@ contract NftLoan{
 //----------------------------------------------------------------------------------------------------------------------
     
     //Function using which the users can make a loan request
-    function askForLoan(uint256 _nftId, address _nft, uint256 _amount,  uint256 _loanDuration, uint256 _interest) public{
+    function askForLoan(uint256 _nftId, address _nft, uint256 _amount,  uint256 _loanDuration, uint256 _interest) public nonReentrant{
         IERC721(_nft).transferFrom(msg.sender, address(this), _nftId);
         uint256 amountToBeRepayed = _amount + mulDiv(_amount, _interest, 100);
+        uint256 _loanId = loanId.current();
         loanList[loanId] = Loan(_amount, _interest, amountToBeRepayed,  _nftId, _loanDuration, loanId, 0 , _nft,  payable(msg.sender), payable(address(0)), Status.Open );
+        loanId.increment();
         emit newLoan(msg.sender, loanId);
-        loanId++;
     }
 
     //Other users can view the request details and use this function to lend money
@@ -96,7 +108,7 @@ contract NftLoan{
     }
     
     //Function using which the borrower can return the money and get his NFT back
-    function repayLoan(uint _loanId) public payable onlyBorrower(_loanId) isLoaned(_loanId){
+    function repayLoan(uint _loanId) public payable onlyBorrower(_loanId) isLoaned(_loanId) nonReentrant{
         Loan storage loan = loanList[_loanId];
         require(loan.loanDurationEndTimestamp > block.timestamp, "Loan duration Ended");
         require(msg.value == loan.amountToBeRepayed, "send correct loanAmount");
@@ -143,7 +155,7 @@ contract NftLoan{
 
     //View the Id
     function getId() public view returns(uint id){
-        return loanId;
+        return loanId.current();
     }
 
 }
