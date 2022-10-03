@@ -102,6 +102,7 @@ const Newdetails = (props) => {
                         <p>Amount: {amount} celo</p>
                         <p>interest: {detail.interest}%</p>
                         <p>nftAddress: {detail.nftAddress.substring(0,5)}</p>
+                        <p>Amount after Interest: {amountToBeRepayed} </p>
                         {detail.status == 0 && (
                             <div>
                                 <p>loanDuration: {detail.loanDuration} mins </p>
@@ -111,7 +112,6 @@ const Newdetails = (props) => {
                             <div>
                                 <p>loan Due: {loanDurationEndDate} </p>
                                 <p>Loan Duration: {detail.loanDuration} mins </p>
-                                <p>Amount after Interest: {amountToBeRepayed} </p>
                             </div>
                         )}
                         <p>Borrower Address: {detail.borrowerAddress.substring(0,5)}</p>    

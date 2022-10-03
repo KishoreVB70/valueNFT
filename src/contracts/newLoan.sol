@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /*
 Todo
-    1)Add interest
+    1) Look if there could be any other improvements
 */
 
 contract NftLoan{
