@@ -54,18 +54,18 @@ const Input = (props) => {
         <div className="hider">
             <div className="modal-body">
                 <p>Fill the required information </p>
-                <input placeholder="amount" type="number" value={amount} onChange = { (e) => setAmount(e.target.value) } />
+                <input placeholder="amount(celo)" type="number" value={amount} onChange = { (e) => setAmount(e.target.value) } />
                 <input placeholder="nftAddress" value={nftAddress} onChange = { (e) => setNftAddress(e.target.value) } />
                 <input placeholder="nftId" type="number" value={nftId} onChange = { (e) => setNftId(e.target.value) } />
                 <input placeholder="interest" type="number" value={interest} onChange = { (e) => setInterest(e.target.value) } />
                 <input placeholder="loanDuration(minutes)" type="number" value={loanDuration} onChange = { (e) => setLoanDuration(e.target.value) } />
-                <button onClick={
+                <button className="newBtn" onClick={
                     () => {
                         console.log("clicked");
                         askForLoan(nftId, nftAddress, amount,  loanDuration, interest);
                         props.onClose()
                     } } >Ask for Loan</button>
-                <button onClick={() => props.onClose()} >Close</button>
+                <button className="newBtn" onClick={() => props.onClose()} >Close</button>
             </div>
         </div>
     );

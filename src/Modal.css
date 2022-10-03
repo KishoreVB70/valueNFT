@@ -24,3 +24,16 @@
     padding: 10px;
     margin: 10px;
 }
+
+.newBtn{
+    border: 2px solid #B8043B;
+    background-color: black;
+    border-radius: 8px;
+    margin: 5px;
+    color: white;
+}
+.newBtn:hover{
+    background-color: white;
+    color: black;
+    box-shadow: 2px 2px 5px #B8043B;
+  }
