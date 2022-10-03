@@ -15,8 +15,8 @@ import "./App.css";
 import Newdetails from "./components/Newdetails";
 
 const App = function AppWrapper() {
-  // let loanContractAddress = "0x64Ade859d15699A15707783Dc0A90D60C29Aa8c9"; 
-  let loanContractAddress = "0xd237f750e1Be2c9e52FE9AB36559e9763a772141"; 
+  // let loanContractAddress = "0xd237f750e1Be2c9e52FE9AB36559e9763a772141"; 
+  let loanContractAddress = "0x9f15F7265B93506De62298BF3a219AAD47F24B5D"; 
   const [showModal, setShowModal] = useState();
   const [loans, setLoans] = useState();
   const [loanContract, setLoanContract] = useState();
