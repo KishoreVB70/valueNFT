@@ -35,7 +35,7 @@ contract NftLoan is ReentrancyGuard{
         Closed
     }
 
-    mapping(uint => Loan) loanList;
+    mapping(uint256 => Loan) loanList;
 
     using Counters for Counters.Counter;
 
@@ -44,21 +44,21 @@ contract NftLoan is ReentrancyGuard{
 
     //Modifiers
 
-    modifier onlyBorrower(uint _loanId){
+    modifier onlyBorrower(uint256 _loanId){
         require(
             msg.sender == loanList[_loanId].borrower,
             "Only the borrower can access this function");
         _;
     }
 
-    modifier isOpen(uint _loanId){
+    modifier isOpen(uint256 _loanId){
         require(
             loanList[_loanId].status == Status.Open, 
             "Loan is not Open");
         _;
     }
 
-    modifier isLoaned(uint _loanId){
+    modifier isLoaned(uint256 _loanId){
         require(
             loanList[_loanId].status == Status.Loaned, 
             "The loan is not in loaned state");
@@ -66,15 +66,15 @@ contract NftLoan is ReentrancyGuard{
     }
 
     //Events
-    event newLoan(address borrower, uint indexed loanId);
+    event newLoan(address borrower, uint256 indexed loanId);
 
-    event loaned(address borrower, address lender, uint indexed loanId, uint loanAmount);
+    event loaned(address borrower, address lender, uint256 indexed loanId, uint256 loanAmount);
 
-    event requestClosed(address borrower, uint indexed loanId);
+    event requestClosed(address borrower, uint256 indexed loanId);
 
-    event loanRepayed(address borrower, address lender, uint indexed loanId, uint loanAmount );
+    event loanRepayed(address borrower, address lender, uint256 indexed loanId, uint256 loanAmount );
 
-    event nftCeased(address borrower, address  lender, uint indexed loanId);
+    event nftCeased(address borrower, address  lender, uint256 indexed loanId);
 
 //----------------------------------------------------------------------------------------------------------------------
     
@@ -102,7 +102,7 @@ contract NftLoan is ReentrancyGuard{
         require(msg.value == loan.loanAmount, "send correct loanAmount");
         (bool success, ) = loan.borrower.call{value: msg.value}("");
         require(success, "Payment to buy lot failed");
-        loan.loanDurationEndTimestamp = block.timestamp + loan.loanDuration * 60;
+        loan.loanDurationEndTimestamp = block.timestamp + loan.loanDuration * 1 minutes;
         loan.lender = payable(msg.sender);
         loan.status = Status.Loaned;
         emit loaned(loan.borrower, loan.lender, _loanId, loan.loanAmount);
@@ -129,7 +129,7 @@ contract NftLoan is ReentrancyGuard{
     }
 
     /// @dev If the borrower fails to pay back the money, after the loan duration ends, the nft is transfered the lender
-    function ceaseNft(uint _loanId) public isLoaned(_loanId){
+    function ceaseNft(uint256 _loanId) public isLoaned(_loanId){
         Loan storage loan = loanList[_loanId];
         require(msg.sender == loan.lender, "Only the lender can cease the NFT");
         require(loan.loanDurationEndTimestamp < block.timestamp, "Loan duration not over");
@@ -139,14 +139,25 @@ contract NftLoan is ReentrancyGuard{
     }
     
     /// @dev helper function to calculate the percentage interest
-    function mulDiv (uint x, uint y, uint z) internal pure returns (uint){
-        uint a = x / z; uint b = x % z; // x = a * z + b
-        uint c = y / z; uint d = y % z; // y = c * z + d
+    function mulDiv (uint256 x, uint256 y, uint256 z) internal pure returns (uint256){
+        uint256 a = x / z; uint256 b = x % z; // x = a * z + b
+        uint256 c = y / z; uint256 d = y % z; // y = c * z + d
         return a * b * z + a * d + b * c + b * d / z;
     }
 
     /// @dev View funciton that returns the required details of the loan
-    function getDetails(uint _loanId) public view returns(uint loanAmount, uint interest, uint amountToBeRepayed, uint nftId, uint loanDuration, uint loanDurationEndTimestamp, uint loanIndex, address nftAddress, address payable borrowerAddress, address payable lenderAddress, Status status){
+    function getDetails(uint256 _loanId) public view returns(
+        uint256 loanAmount,
+        uint256 interest, 
+        uint256 amountToBeRepayed, 
+        uint256 nftId, 
+        uint256 loanDuration, 
+        uint256 loanDurationEndTimestamp, 
+        uint256 loanIndex, 
+        address nftAddress, 
+        address payable borrowerAddress, 
+        address payable lenderAddress, 
+        Status status){
         require(_loanId <= loanId.current(), "loan does not exist");
         Loan storage loan = loanList[_loanId];
         return(
@@ -165,7 +176,7 @@ contract NftLoan is ReentrancyGuard{
     }
 
     /// @dev View the Id
-    function getId() public view returns(uint id){
+    function getId() public view returns(uint256 id){
         return loanId.current();
     }
 

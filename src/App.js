@@ -12,7 +12,7 @@ import { getloanid, getloans } from "./utils/loaner";
 import abi from "./contracts/abi.json";
 
 import "./App.css";
-import Newdetails from "./components/Newdetails";
+import Details from "./components/Details";
 
 const App = function AppWrapper() {
   // let loanContractAddress = "0xd237f750e1Be2c9e52FE9AB36559e9763a772141"; 
@@ -58,7 +58,7 @@ const App = function AppWrapper() {
             <div>
                   <button className="askForLoan bigBtn" onClick={() => setShowModal(true)} >Ask for Loan</button>
                   <Input onClose={() => setShowModal(false)} loanContractAddress = {loanContractAddress} show={showModal} loanContract={loanContract} getLoans = {getLoans} />
-                  <Newdetails  loans= {loans} loanContract={loanContract}  getLoans = {getLoans} />
+                  <Details  loans= {loans} loanContract={loanContract}  getLoans = {getLoans} />
             </div>
           </main>
         </Container>
