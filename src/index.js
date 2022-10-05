@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import {BrowserRouter as Router} from "react-router-dom";
+
 import {
   ContractKitProvider,
   Alfajores,
@@ -12,7 +14,7 @@ import "@celo-tools/use-contractkit/lib/styles.css";
 import "react-toastify/dist/ReactToastify.min.css";
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Router>
     <ContractKitProvider
       networks={[Alfajores]}
       network={{
@@ -29,7 +31,7 @@ ReactDOM.render(
     >
       <App />
     </ContractKitProvider>
-  </React.StrictMode>,
+  </ Router>,
   document.getElementById("root")
 );
 

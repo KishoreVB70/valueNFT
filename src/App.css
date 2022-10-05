@@ -91,7 +91,7 @@
 .askForLoan{
   position: absolute;
   left: 0;
-  top: 0;
+  top: 100px;
   margin: 8px;  
 }
 
