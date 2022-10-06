@@ -1,12 +1,15 @@
 import React from 'react';
+import "../App.css";
 
 const Navbar = () => {
   return (
-    <div>
-      <ul className='hidden md:flex'>
+    <nav className='nav' >
+      <ul className='site-title'>
         <li>
-            <a href='/'>Home</a>
+            <a href='/'>Gift Dapp</a>
         </li>
+      </ul>
+      <ul>
         <li>
             <a href='/yournfts'>Your NFTs</a>    
         </li>
@@ -17,7 +20,7 @@ const Navbar = () => {
             <a href='/products'>Products</a>
         </li>
       </ul>
-    </div>
+    </nav>
   );
 };
 
