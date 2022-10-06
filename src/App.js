@@ -20,7 +20,7 @@ import Products from './pages/Products';
 
 //My Imports
 import abi from "./contracts/abi.json";
-import "./App.css";
+import "./styles/App.css";
 
 const App = function AppWrapper() {
 

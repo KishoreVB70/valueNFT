@@ -1,5 +1,5 @@
 import { useState } from "react";
-import '../Modal.css';
+import '../styles/Modal.css';
 import {mint, getmintingfee} from "../utils/gifter";
 
 import {useContractKit} from "@celo-tools/use-contractkit";

@@ -3,7 +3,7 @@ import Input from "../components/Input";
 import { useState} from "react";
 
 
-import "../App.css";
+import "../styles/App.css";
 
 const Home = function AppWrapper(props) {
   const [showModal, setShowModal] = useState();
