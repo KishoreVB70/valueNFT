@@ -13,12 +13,12 @@ export const mint = async (giftContract, performActions, _value, _mintingFee) =>
     }
 };
 
-export const redeemcash = async (giftContract, performActions, _tokenId, _value, _redeemFee) => {
+export const redeemcash = async (giftContract, performActions, _tokenId, _redeemFee) => {
     try {
-        let value = ethers.utils.parseUnits(`${_value}`) + _redeemFee;
+        let redeemFee = ethers.utils.parseUnits(_redeemFee);
         await performActions(async (kit) => {
             const {defaultAccount} = kit;
-            await giftContract.methods.redeemCash(_value).send({from: defaultAccount, value: value});
+            await giftContract.methods.redeemCash(_tokenId).send({from: defaultAccount, value: redeemFee});
         });
     } catch (e) {
         console.log({e});
@@ -29,7 +29,7 @@ export const giftnft = async (giftContract, performActions, _tokenId, _receiver)
     try {
         await performActions(async (kit) => {
             const {defaultAccount} = kit;
-            await giftContract.methods.giftNft(_tokenId).send({from: defaultAccount});
+            await giftContract.methods.giftNft(_tokenId, _receiver).send({from: defaultAccount});
         });
     } catch (e) {
         console.log({e});
@@ -38,31 +38,149 @@ export const giftnft = async (giftContract, performActions, _tokenId, _receiver)
 
 export const getmintingfee = async (giftContract) => {
     try {
-        const value =  await giftContract.methods.getFee().call();
+        const value =  await giftContract.methods.getmintingFee().call();
+        return value
+    } catch (e) {
+        console.log({e});
+    }
+};
+export const getredeemfee = async (giftContract) => {
+    try {
+        const value =  await giftContract.methods.getredeemFee().call();
         return value
     } catch (e) {
         console.log({e});
     }
 };
 
-export const getallowance = async (nftContract, performActions,  _nftId, contractAddress) => {
+//<-----------------------------------------<Listing Section>------------------------------------------------->
+
+export const listnft = async (giftContract, performActions, _tokenId) => {
     try {
         await performActions(async (kit) => {
             const {defaultAccount} = kit;
-            await nftContract.methods.approve(contractAddress, _nftId).send({from: defaultAccount});
-        });
+            await giftContract.methods.listNft(_tokenId).send({from: defaultAccount});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const buynft = async (giftContract, performActions, _tokenId, _value) => {
+    try {
+        await performActions(async (kit) => {
+            const {defaultAccount} = kit;
+            await giftContract.methods.buyNft(_tokenId).send({from: defaultAccount, value: _value});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const unlistnft = async (giftContract, performActions, _tokenId) => {
+    try {
+        await performActions(async (kit) => {
+            const {defaultAccount} = kit;
+            await giftContract.methods.unListNft(_tokenId).send({from: defaultAccount});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+//<--------------------------------------<Product Section>----------------------------------------------------->
+export const addproduct = async (giftContract, performActions, _nftValue, _celoValue, _name, _description, _quantity) => {
+    try {
+        await performActions(async (kit) => {
+            let value = ethers.utils.parseUnits(_celoValue);
+            const {defaultAccount} = kit;
+            await giftContract.methods.addProduct(_nftValue, value,_name, _description, _quantity).send({from: defaultAccount});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const buywithcelo = async (giftContract, performActions, _productId, _value) => {
+    try {
+        await performActions(async (kit) => {
+            const {defaultAccount} = kit;
+            await giftContract.methods.buyWithCelo(_productId).send({from: defaultAccount, value: _value});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const buywithnft = async (giftContract, performActions, _productId, _tokenId) => {
+    try {
+        await performActions(async (kit) => {
+            const {defaultAccount} = kit;
+            await giftContract.methods.buyWithNft(_productId, _tokenId).send({from: defaultAccount});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const changeprice = async (giftContract, performActions, _productId, _price) => {
+    try {
+        await performActions(async (kit) => {
+            const {defaultAccount} = kit;
+            await giftContract.methods.changePrice(_productId, _price).send({from: defaultAccount});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const addquantity = async (giftContract, performActions, _productId, _quantity) => {
+    try {
+        await performActions(async (kit) => {
+            const {defaultAccount} = kit;
+            await giftContract.methods.addquantity(_productId, _quantity).send({from: defaultAccount});
+        }); 
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+//<-------------------------------------------<View Functions>------------------------------------------------->
+
+export const gettokensofowner = async (giftContract) => {
+    try {
+        const value =  await giftContract.methods.getTokensOfOwner().call();
+        return value
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const gettokenvalue = async (giftContract, _tokenId) => {
+    try {
+        const value =  await giftContract.methods.getTokenValue(_tokenId).call();
+        return value
     } catch (e) {
         console.log({e});
     }
 };
 
 
-export const getloans = async (giftContract, loanId) => {
+export const getlistedtokenid = async (giftContract) => {
+    try {
+        const value =  await giftContract.methods.getListedTokenId().call();
+        return value
+    } catch (e) {
+        console.log({e});
+    }
+};
+
+export const getlistedtokens = async (giftContract, tokenId) => {
     try {
         let details = [];
-        for(let i =0; i < loanId; i++){
-            let _detail = await giftContract.methods.getDetails(i).call();
-          details.push(_detail);
+        for(let i =0; i < tokenId; i++){
+            let _detail = await giftContract.methods.getListedToken(i).call();
+            console.log(_detail);
+            details.push(_detail);
         }
         return details;    
     } catch (e) {
@@ -70,47 +188,22 @@ export const getloans = async (giftContract, loanId) => {
     }
 };
 
-export const lendmoney = async (_giftContract, performActions, _nftId, amount) => {
+export const getproducts = async (giftContract, productId) => {
     try {
-        await performActions(async (kit) => {
-            let intAmount = ethers.utils.parseUnits(`${amount}`);
-            const {defaultAccount} = kit;
-            await _giftContract.methods.lendMoney(_nftId).send({from: defaultAccount, value: intAmount});
-        });
+        let details = [];
+        for(let i =0; i < productId; i++){
+            let _detail = await giftContract.methods.getProduct(i).call();
+          details.push(_detail);
+        }
+        return details;    
     } catch (e) {
         console.log({e});
     }
 };
-
-
-export const repayloan = async (_giftContract, performActions, _nftId, amount) => {
+export const getproductid = async (giftContract) => {
     try {
-        await performActions(async (kit) => {
-            let intAmount = ethers.utils.parseUnits(`${amount}`);
-            const {defaultAccount} = kit;
-            await _giftContract.methods.repayLoan(_nftId).send({from: defaultAccount, value: intAmount});
-        });
-    } catch (e) {
-        console.log({e});
-    }
-};
-
-export const closeborrowrequest = async (_giftContract, performActions, _nftId) => {
-    try {
-        await performActions(async (kit) => {
-            const {defaultAccount} = kit;
-            await _giftContract.methods.closeBorrowRequest(_nftId).send({from: defaultAccount});
-        });
-    } catch (e) {
-        console.log({e});
-    }
-};
-export const ceasenft = async (_giftContract, performActions, _nftId) => {
-    try {
-        await performActions(async (kit) => {
-            const {defaultAccount} = kit;
-            await _giftContract.methods.ceaseNft(_nftId).send({from: defaultAccount});
-        });
+        const value =  await giftContract.methods.getProductId().call();
+        return value
     } catch (e) {
         console.log({e});
     }

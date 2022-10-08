@@ -25,7 +25,7 @@ ReactDOM.render(
         chainId: 44787,
       }}
       dapp={{
-        name: "NFT Loan Dapp",
+        name: "Gift Dapp",
         description: "A Dapp to get loans on NFT",
       }}
     >

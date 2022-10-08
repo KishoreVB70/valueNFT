@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 
 
 
-const Input = (props) => {
+const Mint = (props) => {
     let giftContract = props.giftContract;
     const {performActions} = useContractKit();
     const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ const Input = (props) => {
             let _mintingFee = await getmintingfee(giftContract);
             _mintingFee = ethers.utils.formatEther(_mintingFee);
             await mint(giftContract, performActions, _intValue, _mintingFee);
-            await props.getLoans();
+            await props.getNfts();
         } catch (e) {
             console.log({e})
         } finally {
@@ -29,7 +29,6 @@ const Input = (props) => {
         }
     };
         
-
     if( !props.show ){
         return null;
     }
@@ -39,7 +38,7 @@ const Input = (props) => {
             <div className="modal-body">
                 <p>Fill the required information </p>
                 <select value={amount} onChange={(e) => setAmount(e.target.value)}>
-                    <option value="1"> No value</option>
+                    <option value="0">Select Value</option>
                     <option value="1"> 1 </option>
                     <option value="2"> 2 </option>
                     <option value="5"> 5 </option>
@@ -57,4 +56,4 @@ const Input = (props) => {
         </div>
     );
 }
-export default Input;
+export default Mint;

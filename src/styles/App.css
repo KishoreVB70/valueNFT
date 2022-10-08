@@ -121,7 +121,7 @@
   text-decoration: none;
   color: rgba(255, 255, 255, 0.8);
   background: black;
-  border: 2px solid #B8043B;
+  border: 2px solid blue;
   padding: 15px 40px;
   border-radius: 4px;
   font-weight: normal;
@@ -131,19 +131,19 @@
 
 .bigBtn:hover {
   color: rgba(255, 255, 255, 1B8043B);
-  box-shadow: 6px 7px 18px #B8043B;
+  box-shadow: 6px 7px 18px blue;
   background-color: #26020d;
 }
 
 .askForLoan{
   position: absolute;
   left: 0;
-  top: 100px;
+  top: 9%;
   margin: 8px;  
 }
 
 .detail{
-  border: 2px solid #B8043B;
+  border: 2px solid blue;
   margin: 7px;
   padding: 7px;
 }
@@ -152,7 +152,7 @@
 
 
 h1{
-  color: #B8043B;
+  color: blue;
   margin-top: 5px;
   margin-bottom: 50px;
 }
@@ -166,7 +166,7 @@ h1{
 }
 
 .info{
-  border: 1px solid #B8043B;
+  border: 1px solid blue;
   position: absolute;
   top: 0px;
   right: 0px;
@@ -192,6 +192,6 @@ h1{
 
 
 h3{
-  border-bottom: 1px solid #B8043B;
+  border-bottom: 1px solid blue;
 }
 

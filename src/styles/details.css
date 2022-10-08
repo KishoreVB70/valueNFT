@@ -6,16 +6,16 @@
 }
 
 .detail{
-  width: 25%;
+  width: 30%;
   text-align: center;
-  border: 2px solid #B8043B;
+  border: 2px solid blue;
   margin: 7px;
   padding: 7px;
 }
 
   /* Buttons */
   .newbtn{
-    border: 2px solid #B8043B;
+    border: 2px solid blue;
     background-color: black;
     border-radius: 8px;
     margin: 5px;
@@ -38,7 +38,7 @@
     text-decoration: none;
     color: rgba(255, 255, 255, 0.8);
     background: black;
-    border: 2px solid #B8043B;
+    border: 2px solid blue;
     padding: 15px 40px;
     border-radius: 4px;
     font-weight: normal;
@@ -48,7 +48,14 @@
   
   .bigBtn:hover {
     color: rgba(255, 255, 255, 1B8043B);
-    box-shadow: 6px 7px 18px #B8043B;
+    box-shadow: 6px 7px 18px blue;
     background-color: #26020d;
+  }
+
+  .fetching{
+    align-items: center;
+    position: absolute;
+    top: 30%;
+    left: 30%;
   }
   
