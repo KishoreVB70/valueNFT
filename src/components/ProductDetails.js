@@ -12,7 +12,8 @@ const Details = (props) => {
     const { address, performActions } = useContractKit();
 
     const [loading, setLoading] = useState(false);
-    const [showFull, setShowFull]= useState(false)
+    const [showEdit, setShowEdit]= useState(false)
+    const [showBuyWIthNft, setShowBuyWIthNft]= useState(false)
 
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
@@ -29,6 +30,7 @@ const Details = (props) => {
             </div>
         );
     }
+    
 
     const buyWithCelo = async (key, _value) => {
         try {
@@ -94,35 +96,47 @@ const Details = (props) => {
                         <p>Description: {product.description}</p>
                         <p>Amount: {celoAmount} celo</p>
                         <p>NFT Amount: {nftAmount}</p>
-                        <p>Seller Address: {product.seller.substring(0,5)}</p>
                         {
                             isOwner && (
                                 <div>
-                                    <button className='newbtn' onClick = {() => setShowFull(true)}>Edit Product</button>
+                                    <p>Products Available: {product.itemsAvailable}</p>
+                                    <p>Products Sold: {product.itemsSold}</p>
+                                    <button className='newbtn' onClick = {() => setShowEdit(true)}>Edit Product</button>
                                 </div>
                             )
                         }
                         {
                             !isOwner &&(
                                 <div>
+                                    <p>Seller Address: {product.seller}</p>
                                     <button className='newbtn' onClick={() => buyWithCelo(product.productIndex, product.celoPrice)}>Buy with Celo</button>
-                                    <input placeholder="token ID" type="number" value={tokenId} onChange = { (e) => setTokenId(e.target.value) } />
-                                    <button className='newbtn' onClick={() => buyWithNft(product.productIndex, tokenId)}>Buy with NFT</button>
+                                    <button className='newbtn' onClick={() => setShowBuyWIthNft(true)}>Buy with NFT</button>
                                 </div>
                             )
                         }
                         {
-                            showFull &&(
+                            showEdit &&(
                                 <div className="hider">
                                     <div className="modal-body" >
                                         <input placeholder="new price" type="number" value={price} onChange = { (e) => setPrice(e.target.value) } />
                                         <button className='newbtn' onClick = {() => changePrice(product.productIndex, price)}> Change Price </button>
                                         <input placeholder="Quantity" type="number" value={quantity} onChange = { (e) => setQuantity(e.target.value) } />
                                         <button className='newbtn' onClick = {() => addQuantity(product.productIndex, quantity)}>Add Quantity</button>
-                                        <button className='newbtn' onClick = {() => setShowFull(false)}>Close</button>
+                                        <button className='newbtn' onClick = {() => setShowEdit(false)}>Close</button>
                                     </div>
                                 </div>
                             ) 
+                        }
+                        {
+                            showBuyWIthNft &&(
+                                <div className="hider">
+                                    <div className="modal-body" >
+                                        <input placeholder="token ID" type="number" value={tokenId} onChange = { (e) => setTokenId(e.target.value) } />
+                                        <button className='newbtn' onClick={() => buyWithNft(product.productIndex, tokenId)}>Buy with NFT</button>
+                                        <button className='newbtn' onClick = {() => setShowBuyWIthNft(false)}>Close</button>
+                                    </div>
+                                </div>
+                            )
                         }
                     </div>
                 ) 

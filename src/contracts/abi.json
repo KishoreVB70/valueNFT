@@ -99,7 +99,7 @@
         },
         {
           "internalType": "string",
-          "name": "_description",
+          "name": "_image",
           "type": "string"
         },
         {
@@ -216,6 +216,24 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_productId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_price",
+          "type": "uint256"
+        }
+      ],
+      "name": "changeCeloPrice",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "_mintingFee",
           "type": "uint256"
         },
@@ -226,24 +244,6 @@
         }
       ],
       "name": "changeFee",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_productId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_price",
-          "type": "uint256"
-        }
-      ],
-      "name": "changePrice",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -345,13 +345,18 @@
           "type": "uint256"
         },
         {
+          "internalType": "uint256",
+          "name": "itemsSold",
+          "type": "uint256"
+        },
+        {
           "internalType": "string",
           "name": "name",
           "type": "string"
         },
         {
           "internalType": "string",
-          "name": "description",
+          "name": "image",
           "type": "string"
         },
         {

@@ -20,7 +20,17 @@ const NftMarketPlace = (props) => {
   const [loading, setLoading] = useState(false);
 
 
+  useEffect(() => {
+    getNfts();
+  }, [])
 
+  if(!nfts){
+      return(
+          <div className="fetching">
+          <h1 >Fetching Products...</h1>
+          </div>
+      );
+  }
 
   const getNfts = async() => {
     const kit = await getConnectedKit();
@@ -28,23 +38,11 @@ const NftMarketPlace = (props) => {
     setGiftContract(_giftContract);
 
     let nftIndex = await getlistedtokenid(_giftContract);
-    console.log(nftIndex);
     let _nfts = await getlistedtokens(_giftContract,nftIndex);
-    console.log(_nfts);
     setNfts(_nfts);
   }
 
-  useEffect(() => {
-    getNfts();
-  }, [])
 
-    if(!nfts){
-        return(
-            <div className="fetching">
-            <h1 >Fetching Products...</h1>
-            </div>
-        );
-    }
 
     const buyNft = async (key, _value) => {
         try {
@@ -69,10 +67,17 @@ const NftMarketPlace = (props) => {
             setLoading(false)
         }
     };
-    
+
+    let actualNfts = nfts.filter(nft => nft._forSale === true) ;
+
+    if(actualNfts === []){
+        return(
+            <h1>No NFTS</h1>
+        )
+    }
     return(
         <div className='Details' >
-            {nfts.map(  (nft, key) => {
+            {actualNfts.map(  (nft, key) => {
                 let isOwner = nft._owner.toLowerCase() == address.toLowerCase();
                 let  Amount = ethers.utils.formatEther(nft._tokenValue);
 

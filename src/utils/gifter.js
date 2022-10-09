@@ -28,6 +28,7 @@ export const redeemcash = async (giftContract, performActions, _tokenId, _redeem
 export const giftnft = async (giftContract, performActions, _tokenId, _receiver) => {
     try {
         await performActions(async (kit) => {
+            console.log(_receiver);
             const {defaultAccount} = kit;
             await giftContract.methods.giftNft(_tokenId, _receiver).send({from: defaultAccount});
         });
@@ -88,12 +89,12 @@ export const unlistnft = async (giftContract, performActions, _tokenId) => {
     }
 };
 //<--------------------------------------<Product Section>----------------------------------------------------->
-export const addproduct = async (giftContract, performActions, _nftValue, _celoValue, _name, _description, _quantity) => {
+export const addproduct = async (giftContract, performActions, _nftValue, _celoValue, _name, _image, _quantity) => {
     try {
         await performActions(async (kit) => {
             let value = ethers.utils.parseUnits(_celoValue);
             const {defaultAccount} = kit;
-            await giftContract.methods.addProduct(_nftValue, value,_name, _description, _quantity).send({from: defaultAccount});
+            await giftContract.methods.addProduct(_nftValue, value,_name, _image, _quantity).send({from: defaultAccount});
         }); 
     } catch (e) {
         console.log({e});
@@ -179,7 +180,6 @@ export const getlistedtokens = async (giftContract, tokenId) => {
         let details = [];
         for(let i =0; i < tokenId; i++){
             let _detail = await giftContract.methods.getListedToken(i).call();
-            console.log(_detail);
             details.push(_detail);
         }
         return details;    

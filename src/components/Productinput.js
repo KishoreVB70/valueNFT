@@ -12,14 +12,13 @@ const Mint = (props) => {
     const [nftAmount, setNftAmount] = useState("");
     const [name, setName] = useState("");
     const [celoAmount, setCeloAmount] = useState("");
-    const [description, setDescription] = useState("");
+    const [image, setImage] = useState("");
     const [quantity, setQuantity] = useState("");
 
-
-    const addProduct = async (_nftValue, _celoValue, _name,_description, _quantity) => {
+    const addProduct = async (_nftValue, _celoValue, _name, _image, _quantity) => {
         try {
             setLoading(true);
-            await addproduct(giftContract, performActions, _nftValue, _celoValue, _name, _description, _quantity);
+            await addproduct(giftContract, performActions, _nftValue, _celoValue, _name, _image, _quantity);
             await props.getProducts();
         } catch (e) {
             console.log({e})
@@ -45,13 +44,15 @@ const Mint = (props) => {
                 </select>
                 <input placeholder="amount(celo)" type="number" value={celoAmount} onChange = { (e) => setCeloAmount(e.target.value) } />
                 <input placeholder="name" type="string" value={name} onChange = { (e) => setName(e.target.value) } />
-                <input placeholder="description" type="string" value={description} onChange = { (e) => setDescription(e.target.value) } />
+                <input placeholder="image URL" type="string" value={image} onChange = { (e) => setImage(e.target.value) } />
                 <input placeholder="quantity" type="number" value={quantity} onChange = { (e) => setQuantity(e.target.value) } />
                 <button className="newBtn" onClick={
                     () => {
-                        addProduct(nftAmount,celoAmount,name,description,quantity);
+                        addProduct(nftAmount,celoAmount,name,image,quantity);
                         props.onClose();
-                    } } >Add Product</button>
+                    } } >
+                    Add Product
+                </button>
                 <button className="newBtn" onClick={() => props.onClose()} >Close</button>
             </div>
         </div>

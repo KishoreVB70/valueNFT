@@ -5,6 +5,8 @@ import "../styles/App.css";
 import '../styles/Modal.css';
 
 import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -15,11 +17,12 @@ import { gettokensofowner, gettokenvalue, listnft, redeemcash, giftnft, getredee
 
 function YourNFTs(props) {
   const { getConnectedKit} = useContractKit();
+  const navigate = useNavigate();
 
 
   //Contract
   let giftContractAddress = props.giftContractAddress; 
-  const [giftContract, setGiftContract] = useState();
+  const [giftContract, setGiftContract] = useState("");
   const [showModal, setShowModal] = useState();
   const [showFull, setShowFull]= useState(false)
 
@@ -38,9 +41,11 @@ function YourNFTs(props) {
     let nftsOfUser = await gettokensofowner(_giftContract);
     console.log(nftsOfUser);
 
+    setNfts([]);
+
     nftsOfUser.forEach( async(nft) =>{
       let value = await gettokenvalue(_giftContract,nft)
-      nfts.push(value);
+      setNfts(old => [...old, value]);
     });
   }
 
@@ -48,7 +53,7 @@ function YourNFTs(props) {
     try {
         setLoading(true)
         await listnft(giftContract, performActions, _tokenId);
-        await getNfts();
+        navigate("/nftMarketplace");
     } catch (e) {
         console.log({e})
     } finally {
@@ -57,23 +62,23 @@ function YourNFTs(props) {
 };
   const giftNft = async (_tokenId, _receiverAddress) => {
     try {
-        setLoading(true)
-        await giftnft(giftContract, performActions, _tokenId, _receiverAddress);
-        await getNfts();
+      setLoading(true)
+      await giftnft(giftContract, performActions, _tokenId, _receiverAddress);
+      await getNfts();
     } catch (e) {
-        console.log({e})
+      console.log({e})
     } finally {
-        setLoading(false)
+      setLoading(false)
     }
-};
-
+  };
+  
   const redeemNft = async (_tokenId) => {
     try {
-        setLoading(true)
-        let _redeemFee = await getredeemfee(giftContract);
-        let redeemFee = ethers.utils.formatEther(_redeemFee);
-        await redeemcash(giftContract, performActions, _tokenId, redeemFee);
-        await getNfts();
+      setLoading(true)
+      let _redeemFee = await getredeemfee(giftContract);
+      let redeemFee = ethers.utils.formatEther(_redeemFee);
+      await redeemcash(giftContract, performActions, _tokenId, redeemFee);
+      await getNfts();
     } catch (e) {
         console.log({e})
     } finally {

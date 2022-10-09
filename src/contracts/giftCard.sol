@@ -11,9 +11,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
   using Counters for Counters.Counter;
+
   Counters.Counter tokenId;
   Counters.Counter productId;
-
   Counters.Counter listedTokenId;
 
   address payable owner;
@@ -25,7 +25,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     uint256 totalItemsSold;
     uint256 itemsSoldByNft;
     string name;
-    string description;
+    string image;
     address payable seller;
   }
 
@@ -59,6 +59,13 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     _;
   }
 
+  modifier notListed(uint256 _tokenId){
+    require(
+      !hasListed[_tokenId],
+      "Token is listed"
+    );
+    _;
+  }
 
   modifier isValid(uint256 _input){
     require(
@@ -109,10 +116,19 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     _;
   }
 
+  modifier isAvailable(uint _productId){
+    require(
+      products[_productId].itemsAvailable > 0,
+      "out of stock"
+    );
+    _;
+  }
+
 // Owner functions
   function changeFee(uint256 _mintingFee, uint256 _redeemFee) external 
     isValid(_mintingFee) isValid(_redeemFee)
   {
+    require(msg.sender == owner, "only owner");
     mintingFee = _mintingFee;
     redeemFee = _redeemFee;
   }
@@ -131,34 +147,38 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     tokensOfOwner[msg.sender].push(newId);
   }
 
-
   function redeemCash(uint256 _tokenId) external payable 
   correctMsgValue(redeemFee)
   onlyOwner(_tokenId)
+  notListed(_tokenId)
   {
-    require(_exists(_tokenId), "not exists");
-    require(ownerOf(_tokenId) == msg.sender, "not owner");
     uint value = tokenValue[_tokenId];
     (bool success, ) = payable(msg.sender).call{value: value}("");
     require(success, "Payment failed");
     _burn(_tokenId);
 
     //Remove token from user array
+    tokensOfOwner[msg.sender] = removeFromArray(tokensOfOwner[msg.sender], _tokenId);
   }
 
-  function giftNft(uint256 _tokenId, address _receiver) external onlyOwner(_tokenId){
+  function giftNft(uint256 _tokenId, address _receiver) external 
+    onlyOwner(_tokenId)
+    notListed(_tokenId)
+  {
     require(_receiver != address(0), "invalid address");
     transferFrom(msg.sender, _receiver, _tokenId);
     tokensOfOwner[_receiver].push(_tokenId);
     //Remove token from user
+    tokensOfOwner[msg.sender] = removeFromArray(tokensOfOwner[msg.sender], _tokenId);
   }
 
 //<----------------------------------------<Listing NFT>------------------------------------------------------>
 
   //Functions involving Listed NFT
-
-  function listNft(uint256 _tokenId) external onlyOwner(_tokenId){
-    require(!hasListed[_tokenId], "already listed");
+  function listNft(uint256 _tokenId) external 
+  onlyOwner(_tokenId)
+  notListed(_tokenId)
+  {
     listedTokens[listedTokenId.current()] = ListedToken(
       listedTokenId.current(),
       _tokenId,
@@ -185,17 +205,19 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     tokensOfOwner[msg.sender].push(listedToken.tokenId);
 
     //Delete token from the user
-
+    tokensOfOwner[listedToken.owner] = removeFromArray(tokensOfOwner[listedToken.owner], listedToken.tokenId);
     _transfer(listedToken.owner, msg.sender, listedToken.tokenId);
+    delete listedTokens[_listedTokenId];
   }
 
   function unListNft(uint256 _listedTokenId) external 
-    onlyOwner(listedTokens[_listedTokenId].tokenId) tokenExists(_listedTokenId)
+    onlyOwner(listedTokens[_listedTokenId].tokenId) 
+    tokenExists(_listedTokenId)
   {
     listedTokens[_listedTokenId].forSale = false;
     hasListed[listedTokens[_listedTokenId].tokenId] = false;
+    delete listedTokens[_listedTokenId];
   }
-
 
 //<------------------------------------------<Product side>--------------------------------------------------->
 
@@ -203,7 +225,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     uint256 _price, 
     uint256 _celoPrice, 
     string calldata _name,
-    string calldata _description, 
+    string calldata _image, 
     uint256 _quantity
     ) external
   {
@@ -217,7 +239,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
       0,
       0,
       _name,
-      _description,
+      _image,
       payable(msg.sender)
     );
     productId.increment();
@@ -226,6 +248,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
   function buyWithCelo(uint256 _productId) public payable 
     correctMsgValue(products[_productId].celoPrice)
     notSeller(_productId)
+    isAvailable(_productId)
   {
     Product storage currentProduct = products[_productId];
     (bool success, ) = currentProduct.seller.call{value: msg.value}("");
@@ -234,7 +257,10 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     products[_productId].itemsAvailable--;
   }
 
-  function buyWithNft(uint256 _productId, uint256 _tokenId) public notSeller(_productId) {
+  function buyWithNft(uint256 _productId, uint256 _tokenId) public 
+  notSeller(_productId)
+  isAvailable(_productId)
+  {
     Product storage currentProduct = products[_productId];
     require(tokenValue[_tokenId] == products[_productId].price, "not correct nft");
 
@@ -249,14 +275,21 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     products[_productId].itemsAvailable--;
   }
 
-  function changePrice(uint256 _productId, uint256 _price) external onlySeller(_productId) isValid(_price){
+  function changeCeloPrice(uint256 _productId, uint256 _price) external onlySeller(_productId) isValid(_price){
+    require(_price > products[_productId].price, "invalid price");
     products[_productId].celoPrice = _price;
   }
 
   function addQuantity(uint256 _productId, uint256 _quantity) external onlySeller(_productId) isValid(_quantity){
     products[_productId].itemsAvailable += _quantity;
-  }
+  }  
 
+
+  function removeFromArray(uint[] storage array, uint _tokenId) internal returns (uint[] memory){
+    array[_tokenId] = array[array.length-1];
+    array.pop();
+    return array;
+  }
 //<----------------------------------View Functions------------------------------------------------------------->
 
   function getmintingFee() external view returns(uint256){
@@ -289,14 +322,14 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     );
   }
 
-
-  function getProduct(uint256 _productId) external productExists(_productId) view 
+  function getProduct(uint256 _productId) external view 
     returns(
       uint256 productIndex,
       uint256 price, 
       uint256 celoPrice, 
+      uint256 itemsSold,
       string memory name, 
-      string memory description, 
+      string memory image, 
       address seller
     )
   {
@@ -304,8 +337,9 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
         products[_productId].productIndex,
         products[_productId].price,
         products[_productId].celoPrice,
+        products[_productId].totalItemsSold,
         products[_productId].name,
-        products[_productId].description,
+        products[_productId].image,
         products[_productId].seller
     );
   }
