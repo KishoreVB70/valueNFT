@@ -1,6 +1,6 @@
 # Value NFT
 - [ Link to the Dapp ](https://valuenft.netlify.app/)
-- Small Explanation about this Dapp
+<!-- - Small Explanation about this Dapp -->
 
 <!-- [![Dacade Submission](https://i.postimg.cc/L6pvb3Gb/dacade-submission.jpg)](https://www.youtube.com/watch?v=jj5OdLeW5N0 "Dacade Submission") -->
 
