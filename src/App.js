@@ -27,7 +27,7 @@ const App = function AppWrapper() {
   const { address, destroy, connect } = useContractKit();
   const { balance } = useBalance();
 
-  let giftContractAddress = "0xeb0dA5Dbf547A5114283aB0d1394E9001832e17D";
+  let giftContractAddress = "0x9734c077b87B3ab671D5B7045C25D7BAcDa8E797";
 
   return (
     <>

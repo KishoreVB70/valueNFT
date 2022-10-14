@@ -16,8 +16,6 @@ const Home = (props) => {
 
   return (
     <div className="homeContainer">
-        <button className="askForLoan bigBtn" onClick={() => setShowModal(true)}>Mint An NFT</button>
-        <Mint onClose={() => setShowModal(false)} giftContractAddress = {giftContractAddress} show={showModal} giftContract = {giftContract}  />
           <h1>NFT Value Card Based Economy!</h1>
         <div className="rowDiv">
           <div className="normalDivs">

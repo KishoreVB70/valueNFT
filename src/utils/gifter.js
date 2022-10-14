@@ -92,8 +92,9 @@ export const addproduct = async (giftContract, performActions, _nftValue, _celoV
     try {
         await performActions(async (kit) => {
             let value = ethers.utils.parseUnits(_celoValue);
+            let nftValue = ethers.utils.parseUnits(_nftValue);
             const {defaultAccount} = kit;
-            await giftContract.methods.addProduct(_nftValue, value,_name, _image, _quantity).send({from: defaultAccount});
+            await giftContract.methods.addProduct(nftValue, value,_name, _image, _quantity).send({from: defaultAccount});
         }); 
     } catch (e) {
         console.log({e});

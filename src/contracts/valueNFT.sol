@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 
-contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
+contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
   using Counters for Counters.Counter;
 
   Counters.Counter tokenId;
@@ -53,7 +53,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
 //Modifiers
   modifier tokenExists(uint256 _listedTokenId){
     require(
-      listedTokenId.current() > _listedTokenId, 
+      listedTokenId.current() >= _listedTokenId, 
       "does not exist"
     );
     _;
@@ -94,7 +94,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
 // Product modifiers
   modifier productExists(uint256 _productId){
     require(
-      productId.current() > _productId, 
+      productId.current() >= _productId, 
       "does not exist"
     );
     _;   
@@ -151,6 +151,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
   correctMsgValue(redeemFee)
   onlyOwner(_tokenId)
   notListed(_tokenId)
+  nonReentrant()
   {
     uint value = tokenValue[_tokenId];
     (bool success, ) = payable(msg.sender).call{value: value}("");
@@ -193,6 +194,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
   function buyNft(uint256 _listedTokenId) external payable 
     tokenExists(_listedTokenId) 
     correctMsgValue(listedTokens[_listedTokenId].tokenValue)
+    nonReentrant()
   {
     ListedToken storage listedToken = listedTokens[_listedTokenId];
     require(msg.sender != listedToken.owner, "Owner can't buy NFT");
@@ -202,11 +204,12 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
 
     listedToken.forSale = false;
     hasListed[listedToken.tokenId] = false;
-    tokensOfOwner[msg.sender].push(listedToken.tokenId);
 
     //Delete token from the user
     tokensOfOwner[listedToken.owner] = removeFromArray(tokensOfOwner[listedToken.owner], listedToken.tokenId);
     _transfer(listedToken.owner, msg.sender, listedToken.tokenId);
+    tokensOfOwner[msg.sender].push(listedToken.tokenId);
+
     delete listedTokens[_listedTokenId];
   }
 
@@ -230,7 +233,14 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     ) external
   {
     require(_price < _celoPrice, "price for NFT transfer should be low");
-    require(_price == 1 || _price == 2 ||_price == 5 || _price == 10  ||  _price == 20 );
+    require(
+      _price == 1 * 1 ether 
+      || _price == 2 * 1 ether 
+      ||_price == 5 * 1 ether 
+      || _price == 10  * 1 ether
+      ||  _price == 20 * 1 ether,
+      "Not correct amount"
+    );
     products[productId.current()] = Product(
       productId.current(),
       _celoPrice,
@@ -253,26 +263,30 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     Product storage currentProduct = products[_productId];
     (bool success, ) = currentProduct.seller.call{value: msg.value}("");
     require(success, "Payment failed");    
-    products[_productId].totalItemsSold++;
-    products[_productId].itemsAvailable--;
+    currentProduct.totalItemsSold++;
+    currentProduct.itemsAvailable--;
   }
 
   function buyWithNft(uint256 _productId, uint256 _tokenId) public 
   notSeller(_productId)
   isAvailable(_productId)
+  notListed(_tokenId)
   {
     Product storage currentProduct = products[_productId];
     require(tokenValue[_tokenId] == products[_productId].price, "not correct nft");
 
     transferFrom(msg.sender, products[_productId].seller, _tokenId);
-    products[_productId].totalItemsSold++;
-    products[_productId].itemsSoldByNft++;
+    tokensOfOwner[msg.sender] = removeFromArray(tokensOfOwner[msg.sender], _tokenId);
+    tokensOfOwner[currentProduct.seller].push(_tokenId);
     
+    currentProduct.totalItemsSold++;
+    currentProduct.itemsSoldByNft++;
+    currentProduct.itemsAvailable--;
+  
     if(currentProduct.itemsSoldByNft % 3  == 0){
       (bool success, ) = currentProduct.seller.call{value: mintingFee}("");
       require(success, "payment Failed");
     }
-    products[_productId].itemsAvailable--;
   }
 
   function changeCeloPrice(uint256 _productId, uint256 _price) external onlySeller(_productId) isValid(_price){
@@ -284,9 +298,22 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     products[_productId].itemsAvailable += _quantity;
   }  
 
-
+  //Helper function to remove token from user
   function removeFromArray(uint[] storage array, uint _tokenId) internal returns (uint[] memory){
-    array[_tokenId] = array[array.length-1];
+    if(array.length == 0){
+      array.pop();
+      return array;
+    }
+    //Identify the index
+    uint index;
+    for(uint i = 0; i< array.length; i++){
+      if(array[i] == _tokenId){
+        index = i;
+      }
+    }
+
+    //Removing the element from the index
+    array[index] = array[array.length-1];
     array.pop();
     return array;
   }
@@ -365,8 +392,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
 //<----------------------------------overrides required by Solidity-------------------------------------------->
 
     /**
-     * @dev See {IERC721-transferFrom}.
-     * Changes is made to transferFrom to prevent the renter from stealing the token
+      @dev See {IERC721-transferFrom}.
      */
     function transferFrom(
         address from,
@@ -377,8 +403,7 @@ contract gifterContract is ERC721, ERC721URIStorage,ReentrancyGuard {
     }
 
     /**
-     * @dev See {IERC721-safeTransferFrom}.
-     * Changes is made to safeTransferFrom to prevent the renter from stealing the token
+      @dev See {IERC721-safeTransferFrom}.
      */
     function safeTransferFrom(
         address from,

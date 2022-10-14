@@ -80,14 +80,14 @@ const Details = (props) => {
             setLoading(false)
         }
     };
-
+    console.log(products);
 
     return(
         <div className='Details' >
             {products.map(  (product, key) => {
                 let isOwner = product.seller.toLowerCase() == address.toLowerCase();
                 let  celoAmount = ethers.utils.formatEther(product.celoPrice);
-                let  nftAmount = product.price
+                let  nftAmount = ethers.utils.formatEther(product.price);
 
                 return(
                     <div className="detail" key={key}>
