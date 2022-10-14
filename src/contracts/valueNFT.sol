@@ -12,11 +12,23 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
   using Counters for Counters.Counter;
 
+  //Trackers
   Counters.Counter tokenId;
   Counters.Counter productId;
   Counters.Counter listedTokenId;
 
+  //Deployer of the contract
   address payable owner;
+
+
+  struct ListedToken{
+    uint256 listedIndex;
+    uint256 tokenId;
+    uint256 tokenValue;
+    address payable owner;
+    bool forSale;
+  }
+
   struct Product{
     uint256 productIndex;
     uint256 celoPrice;
@@ -29,28 +41,37 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     address payable seller;
   }
 
-  struct ListedToken{
-    uint256 listedIndex;
-    uint256 tokenId;
-    uint256 tokenValue;
-    address payable owner;
-    bool forSale;
-  }
 
   mapping(uint256 => Product) products;
   mapping(uint256 => ListedToken) listedTokens;
+
   mapping(uint256 => uint256) tokenValue;
+
+  //Array of all the tokenId a address owns
   mapping(address => uint256[]) tokensOfOwner;
+
+  // Token is listed for sale or not
   mapping(uint256 => bool) hasListed;
 
+  //Fee
   uint256 mintingFee = 0.1 ether;
   uint256 redeemFee = 0.1 ether;
 
-  constructor() ERC721("NFT Gift card", "GC") {
+  constructor() ERC721("Value NFT", "VAL") {
     owner = payable(msg.sender);
   }
 
 //Modifiers
+
+  modifier isValid(uint256 _input){
+    require(
+      _input > 0, 
+      "invalid input"
+    );
+    _;
+  }
+
+
   modifier tokenExists(uint256 _listedTokenId){
     require(
       listedTokenId.current() >= _listedTokenId, 
@@ -63,14 +84,6 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     require(
       !hasListed[_tokenId],
       "Token is listed"
-    );
-    _;
-  }
-
-  modifier isValid(uint256 _input){
-    require(
-      _input > 0, 
-      "invalid input"
     );
     _;
   }
@@ -91,7 +104,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     _;
   }
 
-// Product modifiers
+
   modifier productExists(uint256 _productId){
     require(
       productId.current() >= _productId, 
@@ -124,7 +137,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     _;
   }
 
-// Owner functions
+// Owner function
   function changeFee(uint256 _mintingFee, uint256 _redeemFee) external 
     isValid(_mintingFee) isValid(_redeemFee)
   {
@@ -133,9 +146,11 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     redeemFee = _redeemFee;
   }
 
-//---------------------------------------------<Purely NFT>---------------------------------------------------->
-  // Functions involving purely the NFT
 
+// Functions involving purely the NFT
+
+  /// @dev mint an nft for a predetermined value (1/2/5/10/20). along with a mint fee
+  /// @param _value in normal integer converted to ether 
   function mint(uint256 _value) external payable 
     correctMsgValue((_value * 1 ether) + mintingFee)
   {
@@ -147,11 +162,12 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     tokensOfOwner[msg.sender].push(newId);
   }
 
+  /// @dev burn the nft to get cash back with a redeem fee
   function redeemCash(uint256 _tokenId) external payable 
   correctMsgValue(redeemFee)
   onlyOwner(_tokenId)
   notListed(_tokenId)
-  nonReentrant()
+  nonReentrant
   {
     uint value = tokenValue[_tokenId];
     (bool success, ) = payable(msg.sender).call{value: value}("");
@@ -162,6 +178,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     tokensOfOwner[msg.sender] = removeFromArray(tokensOfOwner[msg.sender], _tokenId);
   }
 
+  /// @dev send nft to any address without any fee
   function giftNft(uint256 _tokenId, address _receiver) external 
     onlyOwner(_tokenId)
     notListed(_tokenId)
@@ -173,9 +190,9 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     tokensOfOwner[msg.sender] = removeFromArray(tokensOfOwner[msg.sender], _tokenId);
   }
 
-//<----------------------------------------<Listing NFT>------------------------------------------------------>
+//Functions involving Listed NFT
 
-  //Functions involving Listed NFT
+  /// @dev add an nft for sane
   function listNft(uint256 _tokenId) external 
   onlyOwner(_tokenId)
   notListed(_tokenId)
@@ -191,10 +208,11 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     listedTokenId.increment();
   }
 
+  /// @dev buy any nft in sale
   function buyNft(uint256 _listedTokenId) external payable 
     tokenExists(_listedTokenId) 
     correctMsgValue(listedTokens[_listedTokenId].tokenValue)
-    nonReentrant()
+    nonReentrant
   {
     ListedToken storage listedToken = listedTokens[_listedTokenId];
     require(msg.sender != listedToken.owner, "Owner can't buy NFT");
@@ -213,6 +231,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     delete listedTokens[_listedTokenId];
   }
 
+    /// @dev funciton for oowner to unlist nft
   function unListNft(uint256 _listedTokenId) external 
     onlyOwner(listedTokens[_listedTokenId].tokenId) 
     tokenExists(_listedTokenId)
@@ -222,8 +241,10 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     delete listedTokens[_listedTokenId];
   }
 
-//<------------------------------------------<Product side>--------------------------------------------------->
+// Product functions
 
+    /// @dev add product for sale(nft price less than celo price for economics)
+    /// @param _image is url
   function addProduct(
     uint256 _price, 
     uint256 _celoPrice, 
@@ -255,10 +276,12 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     productId.increment();
   }
 
+  /// @dev buy a product with celo for higher price
   function buyWithCelo(uint256 _productId) public payable 
     correctMsgValue(products[_productId].celoPrice)
     notSeller(_productId)
     isAvailable(_productId)
+    nonReentrant
   {
     Product storage currentProduct = products[_productId];
     (bool success, ) = currentProduct.seller.call{value: msg.value}("");
@@ -267,10 +290,12 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     currentProduct.itemsAvailable--;
   }
 
+  /// @dev buy a product with nft for lower price
   function buyWithNft(uint256 _productId, uint256 _tokenId) public 
   notSeller(_productId)
   isAvailable(_productId)
   notListed(_tokenId)
+  nonReentrant
   {
     Product storage currentProduct = products[_productId];
     require(tokenValue[_tokenId] == products[_productId].price, "not correct nft");
@@ -289,22 +314,25 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     }
   }
 
+  /// @dev Allows the seller to Change the price
   function changeCeloPrice(uint256 _productId, uint256 _price) external onlySeller(_productId) isValid(_price){
     require(_price > products[_productId].price, "invalid price");
     products[_productId].celoPrice = _price;
   }
 
+  /// @dev Allows the seller to add products
   function addQuantity(uint256 _productId, uint256 _quantity) external onlySeller(_productId) isValid(_quantity){
     products[_productId].itemsAvailable += _quantity;
   }  
 
-  //Helper function to remove token from user
+  /// @dev Helper function to remove token from user
   function removeFromArray(uint[] storage array, uint _tokenId) internal returns (uint[] memory){
     if(array.length == 0){
       array.pop();
       return array;
     }
-    //Identify the index
+
+    //Identify the index of the token
     uint index;
     for(uint i = 0; i< array.length; i++){
       if(array[i] == _tokenId){
@@ -317,7 +345,8 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     array.pop();
     return array;
   }
-//<----------------------------------View Functions------------------------------------------------------------->
+
+// View functions
 
   function getmintingFee() external view returns(uint256){
     return mintingFee;
@@ -389,7 +418,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     );
   }
 
-//<----------------------------------overrides required by Solidity-------------------------------------------->
+// overrides required by Solidity
 
     /**
       @dev See {IERC721-transferFrom}.
