@@ -1,12 +1,21 @@
-# NFT LOAN
-- [ Link to the Dapp ](https://nftloancelo.netlify.app/)
-- Small Explanation about this Contract
+# Value NFT
+- [ Link to the Dapp ](https://valuenft.netlify.app/)
+- Small Explanation about this Dapp
 
 <!-- [![Dacade Submission](https://i.postimg.cc/L6pvb3Gb/dacade-submission.jpg)](https://www.youtube.com/watch?v=jj5OdLeW5N0 "Dacade Submission") -->
 
-- For testing users can mint some dummy NFT using [this site](https://celotestminter.netlify.app/)
-- Users can request for loans by putting up their NFT as collateral 
-- The NFT is transfered to the contract on loan listing
-- Other users can look at the NFT details and lend money to the borrowers
-- If the borrower repays the money(with added interest), he can claim his NFT back
-- If the borrower fails to repay the money in the specified duration, the lender can claim the NFT
+- This is an ecosystem based dapp with 3 components
+1) A Minting platform(Your NFTs)
+    - Mint NFTs for cash
+    - Redeem them anytime for the original cash
+    - Both involves a fee of 0.1 celo
+    - Gift NFTs to any user
+2) A NFT marketplace
+    - List your NFTs for sale
+    - Buy NFTS without the risk of minting fee
+    - Get cash for your NFTS without the risk of Redeem Fee
+3) A Product Marketplace
+    - Buy Products for less price if you buy with Value NFT!
+    - List products and earn rewards from sales(0.1 celo per 3 sales)
+- The dapp follows economic principles to keep it viable
+
