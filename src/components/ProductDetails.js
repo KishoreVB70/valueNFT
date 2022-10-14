@@ -18,6 +18,7 @@ const Details = (props) => {
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const [tokenId, setTokenId] = useState('');
+    const [currentId, setCurrentId] = useState(0);
 
     let giftContract = props.giftContract;
 
@@ -31,7 +32,6 @@ const Details = (props) => {
         );
     }
     
-
     const buyWithCelo = async (key, _value) => {
         try {
             setLoading(true)
@@ -71,7 +71,6 @@ const Details = (props) => {
 
     const addQuantity = async (key, quantity) => {
         try {
-            console.log(key);
             setLoading(true)
             await addquantity(giftContract, performActions, key, quantity);
             await props.getProducts();
@@ -93,15 +92,21 @@ const Details = (props) => {
                 return(
                     <div className="detail" key={key}>
                         <h3>{product.name}</h3>
-                        <p>Description: {product.description}</p>
+                        <img  className="productImage"
+                            src={product.image}
+                            alt="product"
+                            />
                         <p>Amount: {celoAmount} celo</p>
                         <p>NFT Amount: {nftAmount}</p>
                         {
                             isOwner && (
                                 <div>
-                                    <p>Products Available: {product.itemsAvailable}</p>
                                     <p>Products Sold: {product.itemsSold}</p>
-                                    <button className='newbtn' onClick = {() => setShowEdit(true)}>Edit Product</button>
+                                    <button className='newbtn' onClick = {
+                                        () => {
+                                            setShowEdit(true)
+                                            setCurrentId(product.productIndex)
+                                            }}>Edit Product</button>
                                 </div>
                             )
                         }
@@ -119,9 +124,9 @@ const Details = (props) => {
                                 <div className="hider">
                                     <div className="modal-body" >
                                         <input placeholder="new price" type="number" value={price} onChange = { (e) => setPrice(e.target.value) } />
-                                        <button className='newbtn' onClick = {() => changePrice(product.productIndex, price)}> Change Price </button>
+                                        <button className='newbtn' onClick = {() => changePrice(currentId, price)}> Change Price </button>
                                         <input placeholder="Quantity" type="number" value={quantity} onChange = { (e) => setQuantity(e.target.value) } />
-                                        <button className='newbtn' onClick = {() => addQuantity(product.productIndex, quantity)}>Add Quantity</button>
+                                        <button className='newbtn' onClick = {() => addQuantity(currentId, quantity)}>Add Quantity</button>
                                         <button className='newbtn' onClick = {() => setShowEdit(false)}>Close</button>
                                     </div>
                                 </div>

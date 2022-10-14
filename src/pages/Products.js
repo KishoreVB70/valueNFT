@@ -28,10 +28,8 @@ function Products(props) {
     setGiftContract(_giftContract);
 
     let productId = await getproductid(_giftContract);
-    console.log(productId);
     let productsUh = await getproducts(_giftContract, productId);
     setProducts(productsUh);
-    console.log(productsUh);
   }
 
   useEffect(() => {

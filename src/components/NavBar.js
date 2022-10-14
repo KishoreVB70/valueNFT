@@ -6,7 +6,7 @@ const Navbar = () => {
     <nav className='nav' >
       <ul className='site-title'>
         <li>
-            <a href='/'>Gift Dapp</a>
+            <a href='/'>Value NFT</a>
         </li>
       </ul>
       <ul>

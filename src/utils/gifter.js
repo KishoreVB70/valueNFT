@@ -3,7 +3,6 @@ import { ethers } from "ethers";
 export const mint = async (giftContract, performActions, _value, _mintingFee) => {
     try {
         let value = ethers.utils.parseUnits(`${eval(_value) + eval(_mintingFee)}`); ;
-        console.log(value);
         await performActions(async (kit) => {
             const {defaultAccount} = kit;
             await giftContract.methods.mint(_value).send({from: defaultAccount, value: value});
@@ -27,8 +26,8 @@ export const redeemcash = async (giftContract, performActions, _tokenId, _redeem
 
 export const giftnft = async (giftContract, performActions, _tokenId, _receiver) => {
     try {
+        console.log(_tokenId);
         await performActions(async (kit) => {
-            console.log(_receiver);
             const {defaultAccount} = kit;
             await giftContract.methods.giftNft(_tokenId, _receiver).send({from: defaultAccount});
         });
@@ -127,7 +126,7 @@ export const changeprice = async (giftContract, performActions, _productId, _pri
     try {
         await performActions(async (kit) => {
             const {defaultAccount} = kit;
-            await giftContract.methods.changePrice(_productId, _price).send({from: defaultAccount});
+            await giftContract.methods.changeCeloPrice(_productId, _price).send({from: defaultAccount});
         }); 
     } catch (e) {
         console.log({e});
@@ -138,7 +137,7 @@ export const addquantity = async (giftContract, performActions, _productId, _qua
     try {
         await performActions(async (kit) => {
             const {defaultAccount} = kit;
-            await giftContract.methods.addquantity(_productId, _quantity).send({from: defaultAccount});
+            await giftContract.methods.addQuantity(_productId, _quantity).send({from: defaultAccount});
         }); 
     } catch (e) {
         console.log({e});

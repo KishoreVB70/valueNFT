@@ -1,0 +1,52 @@
+h1{
+  color: black;
+  font-weight: bolder;
+  font-size: 120%;
+}
+.bigBtn{
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    background: black;
+    border: 2px solid blue;
+    padding: 15px 40px;
+    border-radius: 4px;
+    font-weight: normal;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .bigBtn:hover {
+    color: rgba(255, 255, 255, 1B8043B);
+    box-shadow: 6px 7px 18px blue;
+    background-color: #26020d;
+  }
+  
+  .askForLoan{
+    position: absolute;
+    left: 0;
+    top: 9%;
+    margin: 8px;  
+  }
+
+  .homeContainer{    
+    top: 50px;
+    display: flex;
+    flex-direction: column;
+    flex-basis: auto;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .rowDiv{
+    display: flex;
+    flex-direction: row;
+    align-items: space-between; 
+    justify-content: space-evenly;
+  }
+
+  .normalDivs{
+    margin: 5px 140px;
+    padding: 5px 20px;
+    border: 1px solid black;
+  }

@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/details.css";
 import {useContractKit} from "@celo-tools/use-contractkit";
 import { ethers } from "ethers";
@@ -9,6 +10,7 @@ import abi from "../contracts/abi.json";
 
 
 const NftMarketPlace = (props) => {
+  const navigate = useNavigate();
   const { getConnectedKit, address, performActions } = useContractKit();
 
 
@@ -77,6 +79,7 @@ const NftMarketPlace = (props) => {
     }
     return(
         <div className='Details' >
+            <button className="askForLoan bigBtn" onClick={() => navigate("/yourNFTS")} >Add Your NFT to Marketplace</button>
             {actualNfts.map(  (nft, key) => {
                 let isOwner = nft._owner.toLowerCase() == address.toLowerCase();
                 let  Amount = ethers.utils.formatEther(nft._tokenValue);
