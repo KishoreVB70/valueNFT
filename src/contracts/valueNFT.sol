@@ -420,9 +420,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
 
 // overrides required by Solidity
 
-    /**
-      @dev See {IERC721-transferFrom}.
-     */
+    /// @dev See {IERC721-transferFrom}.
     function transferFrom(
         address from,
         address to,
@@ -431,9 +429,8 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
         super.transferFrom(from, to, _tokenId);
     }
 
-    /**
-      @dev See {IERC721-safeTransferFrom}.
-     */
+
+    /// @dev See {IERC721-safeTransferFrom}.
     function safeTransferFrom(
         address from,
         address to,
