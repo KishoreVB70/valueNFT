@@ -1,8 +1,8 @@
 # Value NFT
 - [ Link to the Dapp ](https://valuenft.netlify.app/)
-<!-- - Small Explanation about this Dapp -->
+- Small Explanation about this Dapp
 
-<!-- [![Dacade Submission](https://i.postimg.cc/L6pvb3Gb/dacade-submission.jpg)](https://www.youtube.com/watch?v=jj5OdLeW5N0 "Dacade Submission") -->
+[![Dacade Submission](https://i.postimg.cc/HnTMMWmy/value-nft-pic.jpg)](https://www.youtube.com/watch?v=yZJD51w_FQM "Dacade Submission")
 
 - This is an ecosystem based dapp with 3 components
 1) A Minting platform(Your NFTs)
