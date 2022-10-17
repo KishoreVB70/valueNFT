@@ -29,7 +29,7 @@ const NftMarketPlace = (props) => {
   if(!nfts){
       return(
           <div className="fetching">
-          <h1 >Fetching Products...</h1>
+          <h1 >Fetching NFTs...</h1>
           </div>
       );
   }
@@ -70,7 +70,7 @@ const NftMarketPlace = (props) => {
         }
     };
 
-    let actualNfts = nfts.filter(nft => nft._forSale === true) ;
+    let actualNfts = nfts.filter(nft => nft._hasListed === true) ;
 
     if(actualNfts === []){
         return(

@@ -26,7 +26,6 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     uint256 tokenId;
     uint256 tokenValue;
     address payable owner;
-    bool forSale;
   }
 
   struct Product{
@@ -201,8 +200,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
       listedTokenId.current(),
       _tokenId,
       tokenValue[_tokenId],
-      payable(msg.sender),
-      true
+      payable(msg.sender)
     );
     hasListed[_tokenId] = true;
     listedTokenId.increment();
@@ -220,7 +218,6 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     (bool success, ) = listedToken.owner.call{value: msg.value}("");
     require(success, "Payment failed");
 
-    listedToken.forSale = false;
     hasListed[listedToken.tokenId] = false;
 
     //Delete token from the user
@@ -236,7 +233,6 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     onlyOwner(listedTokens[_listedTokenId].tokenId) 
     tokenExists(_listedTokenId)
   {
-    listedTokens[_listedTokenId].forSale = false;
     hasListed[listedTokens[_listedTokenId].tokenId] = false;
     delete listedTokens[_listedTokenId];
   }
@@ -351,6 +347,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
   function getmintingFee() external view returns(uint256){
     return mintingFee;
   }
+  
   function getredeemFee() external view returns(uint256){
     return redeemFee;
   }
@@ -371,10 +368,11 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
     return tokensOfOwner[msg.sender];
   }
 
-  function getTokenValue(uint256 _tokenId) external view returns (uint256 token, uint256 value){
+  function getTokenValue(uint256 _tokenId) external view returns (uint256 token, uint256 value, bool _hasListed){
     return (
       _tokenId,
-      tokenValue[_tokenId]
+      tokenValue[_tokenId],
+      hasListed[_tokenId]
     );
   }
 
@@ -405,8 +403,8 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
       uint256 _listedIndex,
       uint256 _tokenId, 
       uint256 _tokenValue, 
-      address _owner, 
-      bool _forSale
+      address _owner,
+      bool _hasListed
     )
   {
     return(
@@ -414,7 +412,7 @@ contract ValueNFT is ERC721, ERC721URIStorage,ReentrancyGuard {
       listedTokens[_listedTokenId].tokenId,
       listedTokens[_listedTokenId].tokenValue,
       listedTokens[_listedTokenId].owner,
-      listedTokens[_listedTokenId].forSale
+      hasListed[listedTokens[_listedTokenId].tokenId]
     );
   }
 

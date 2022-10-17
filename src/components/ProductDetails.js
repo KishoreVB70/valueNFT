@@ -58,7 +58,6 @@ const Details = (props) => {
 
     const changePrice = async (key, price) => {
         try {
-            console.log(key);
             setLoading(true)
             await changeprice(giftContract, performActions, key, price);
             await props.getProducts();
@@ -80,7 +79,6 @@ const Details = (props) => {
             setLoading(false)
         }
     };
-    console.log(products);
 
     return(
         <div className='Details' >

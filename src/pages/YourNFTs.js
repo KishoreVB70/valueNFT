@@ -39,7 +39,6 @@ function YourNFTs(props) {
     setGiftContract(_giftContract);
 
     let nftsOfUser = await gettokensofowner(_giftContract);
-    console.log(nftsOfUser);
 
     setNfts([]);
 
@@ -97,14 +96,24 @@ function YourNFTs(props) {
         <div className='Details' >
           {nfts.map( (nft, key) => {
             let  value = ethers.utils.formatEther(nft.value);
-
             return(
               <div className="detail" key={key}>
                 <p>Token Id: {nft.token}</p>
                 <p>Value: {value}</p>
-                <button className='newbtn' onClick = {() => listNft(nft.token)}>List NFT</button>
-                <button className='newbtn' onClick = {() => redeemNft(nft.token)}>Redeem</button>
-                <button className='newbtn' onClick = {() => setShowFull(true)}>Gift</button>
+                {
+                  nft._hasListed && (
+                    <p>NFT Listed</p>
+                  )
+                }
+                {
+                  !nft._hasListed && (
+                    <div>
+                      <button className='newbtn' onClick = {() => listNft(nft.token)}>List NFT</button>
+                      <button className='newbtn' onClick = {() => redeemNft(nft.token)}>Redeem</button>
+                      <button className='newbtn' onClick = {() => setShowFull(true)}>Gift</button>
+                    </div>
+                  )
+                }
                 {
                   showFull && (
                     <div className="hider">

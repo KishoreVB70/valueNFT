@@ -299,7 +299,7 @@
         },
         {
           "internalType": "bool",
-          "name": "_forSale",
+          "name": "_hasListed",
           "type": "bool"
         }
       ],
@@ -413,6 +413,11 @@
           "internalType": "uint256",
           "name": "value",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_hasListed",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
