@@ -33,6 +33,16 @@
   padding: .25rem;
 }
 
+.nav h5 {
+  color: inherit;
+  text-decoration: none;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 34em;
+}
+
+
 .nav li.active {
   background-color: #555;
 }

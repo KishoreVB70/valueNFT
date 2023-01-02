@@ -19,6 +19,9 @@ const Navbar = () => {
         <li>
             <a href='/products'>Products</a>
         </li>
+        <li>
+          <h5>Network: Celo Alfajores</h5>
+        </li>
       </ul>
     </nav>
   );
